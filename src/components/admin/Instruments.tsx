@@ -1,22 +1,32 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Instrument } from "@/types/instrument";
-import { createInstrument, deleteInstrument } from "@/services/data/InstrumentService";
+import { createInstrument, deleteInstrument, getInstruments } from "@/services/data/InstrumentService";
 
-interface InstrumentsListProps {
-  initialInstruments: Instrument[];
-}
-
-export default function InstrumentsList({ initialInstruments }: InstrumentsListProps) {
-  const [instruments, setInstruments] = useState(initialInstruments);
+export default function InstrumentsList() {
+  const [instruments, setInstruments] = useState<Instrument[]>([]);
   const [newInstrument, setNewInstrument] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (instruments.length === 0 && !error) {
-    setError("No instruments found or failed to load instruments.");
-  }
+  useEffect(() => {
+    const fetchInstruments = async () => {
+      try {
+        const initialInstruments = await getInstruments();
+        setInstruments(initialInstruments);
+        setError(null);
+      } catch {
+        setError("Failed to load instruments.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInstruments();
+  }, []);
 
   const handleAddInstrument = async () => {
     if (!newInstrument) return;
@@ -51,16 +61,20 @@ export default function InstrumentsList({ initialInstruments }: InstrumentsListP
         <Button onClick={handleAddInstrument}>Add Instrument</Button>
       </div>
       {error && <p className="text-red-500">{error}</p>}
-      <ul className="space-y-2">
-        {instruments.map((instrument) => (
-          <li key={instrument.id} className="flex items-center justify-between p-2 border rounded">
-            <span>{instrument.name}</span>
-            <Button variant="destructive" onClick={() => handleDeleteInstrument(instrument.id)}>
-              Delete
-            </Button>
-          </li>
-        ))}
-      </ul>
+      {loading ? (
+        <p>Loading instruments...</p>
+      ) : (
+        <ul className="space-y-2">
+          {instruments.map((instrument) => (
+            <li key={instrument.id} className="flex items-center justify-between p-2 border rounded">
+              <span>{instrument.name}</span>
+              <Button variant="destructive" onClick={() => handleDeleteInstrument(instrument.id)}>
+                Delete
+              </Button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
