@@ -1,39 +1,35 @@
 "use client";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "@/services/api";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { registerSchema, RegisterSchema } from "@/schemas/Auth/register.schema";
+import { signUp } from "@/services/data/sign-up";
 import AuthLayout from "../auth-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { useState } from "react";
 
 export default function RegisterPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterSchema>({
+    resolver: zodResolver(registerSchema),
+  });
 
-  const handleRegister = async (e: { preventDefault: () => void }) => {
-    e.preventDefault();
+  const handleRegister = async (data: RegisterSchema) => {
     setError(null);
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
     try {
-      const payload = {
-        name,
-        email,
-        password,
-      };
-      await api.post("/user", payload);
+      await signUp(data.name, data.email, data.password);
       router.push("/login/sign-in");
     } catch (err) {
-      setError("Failed to register. Please try again.");
+      setError((err as Error).message);
     }
   };
 
@@ -42,7 +38,7 @@ export default function RegisterPage() {
       <CardHeader>
         <CardTitle>Register</CardTitle>
       </CardHeader>
-      <form onSubmit={handleRegister}>
+      <form onSubmit={handleSubmit(handleRegister)}>
         <CardContent className="space-y-4">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
@@ -51,10 +47,10 @@ export default function RegisterPage() {
             <Input
               id="name"
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              {...register("name")}
               required
             />
+            {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
           </div>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -63,10 +59,10 @@ export default function RegisterPage() {
             <Input
               id="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              {...register("email")}
               required
             />
+            {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
           </div>
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
@@ -75,10 +71,10 @@ export default function RegisterPage() {
             <Input
               id="password"
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              {...register("password")}
               required
             />
+            {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
           </div>
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
@@ -87,10 +83,10 @@ export default function RegisterPage() {
             <Input
               id="confirmPassword"
               type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              {...register("confirmPassword")}
               required
             />
+            {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>}
           </div>
         </CardContent>
         {error && <p className="text-red-500 text-sm">{error}</p>}

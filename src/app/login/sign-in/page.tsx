@@ -1,5 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, LoginSchema } from "@/schemas/Auth/login.schema";
 import { useAuth } from "@/context/AuthContext";
 import AuthLayout from "../auth-layout";
 import { Button } from "@/components/ui/button";
@@ -9,18 +11,20 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginSchema>({
+    resolver: zodResolver(loginSchema),
+  });
 
-  const handleLogin = async (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    setError(null);
+  const handleLogin = async (data: LoginSchema) => {
     try {
-      await login(email, password);
+      await login(data.email, data.password);
     } catch {
-      setError("Invalid credentials");
+      console.error("Invalid credentials");
     }
   };
 
@@ -29,7 +33,7 @@ export default function LoginPage() {
       <CardHeader>
         <CardTitle>Login</CardTitle>
       </CardHeader>
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleSubmit(handleLogin)}>
         <CardContent className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -38,10 +42,10 @@ export default function LoginPage() {
             <Input
               id="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              {...register("email")}
               required
             />
+            {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
           </div>
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
@@ -50,13 +54,12 @@ export default function LoginPage() {
             <Input
               id="password"
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              {...register("password")}
               required
             />
+            {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
           </div>
         </CardContent>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
         <CardFooter className="flex flex-col space-y-4">
           <Button type="submit" className="w-full">Login</Button>
           <p className="text-center text-sm text-gray-600">
