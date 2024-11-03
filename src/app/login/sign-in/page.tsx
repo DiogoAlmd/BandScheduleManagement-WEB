@@ -5,13 +5,14 @@ import AuthLayout from "../auth-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleLogin = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
@@ -63,7 +64,7 @@ export default function LoginPage() {
             <button
               type="button"
               className="text-blue-500 hover:underline"
-              onClick={() => router.push("/login/register")}
+              onClick={() => router.push("/login/sign-up")}
             >
               Create account here
             </button>
