@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, RegisterSchema } from "@/schemas/Auth/register.schema";
 import { signUp } from "@/services/data/sign-up";
-import AuthLayout from "../auth-layout";
+import AuthLayout from "../../../components/layout/login/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
