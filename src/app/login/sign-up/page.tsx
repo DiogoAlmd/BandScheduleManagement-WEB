@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { api } from "@/services/api";
 import AuthLayout from "../auth-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,10 +12,29 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleRegister = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    // lógica de autenticação para o registro
+    setError(null);
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    try {
+      const payload = {
+        name,
+        email,
+        password,
+      };
+      await api.post("/user", payload);
+      router.push("/login/sign-in");
+    } catch (err) {
+      setError("Failed to register. Please try again.");
+    }
   };
 
   return (
@@ -72,6 +93,7 @@ export default function RegisterPage() {
             />
           </div>
         </CardContent>
+        {error && <p className="text-red-500 text-sm">{error}</p>}
         <CardFooter>
           <Button type="submit" className="w-full">Register</Button>
         </CardFooter>
