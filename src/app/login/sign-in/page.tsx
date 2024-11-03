@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginSchema } from "@/schemas/Auth/login.schema";
 import { useAuth } from "@/context/AuthContext";
-import AuthLayout from "../../../components/layout/login/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
@@ -29,11 +28,9 @@ export default function LoginPage() {
   };
 
   return (
-    <AuthLayout>
-      <CardHeader>
-        <CardTitle>Login</CardTitle>
-      </CardHeader>
-      <form onSubmit={handleSubmit(handleLogin)}>
+      <><CardHeader>
+      <CardTitle>Login</CardTitle>
+    </CardHeader><form onSubmit={handleSubmit(handleLogin)}>
         <CardContent className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -43,8 +40,7 @@ export default function LoginPage() {
               id="email"
               type="email"
               {...register("email")}
-              required
-            />
+              required />
             {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
           </div>
           <div>
@@ -55,8 +51,7 @@ export default function LoginPage() {
               id="password"
               type="password"
               {...register("password")}
-              required
-            />
+              required />
             {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
           </div>
         </CardContent>
@@ -73,7 +68,6 @@ export default function LoginPage() {
             </button>
           </p>
         </CardFooter>
-      </form>
-    </AuthLayout>
+      </form></>
   );
 }

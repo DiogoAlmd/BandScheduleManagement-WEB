@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsAuthenticated(true);
       }
 
-      router.push("/home");
+      router.push("/dashboard/admin/home");
     } catch (error) {
       console.error("Login error:", error);
     }
