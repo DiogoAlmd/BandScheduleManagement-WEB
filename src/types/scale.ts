@@ -5,15 +5,15 @@ export interface Scale {
     id: number;
     name: string;
   };
-  scaleMusicianInstruments: {
+  scaleMusician: {
     id: number;
     musician: {
       id: number;
       name: string;
     };
-    instrument: {
+    instruments: {
       id: number;
       name: string;
-    };
+    }[];
   }[];
 }

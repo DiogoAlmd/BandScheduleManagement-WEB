@@ -46,7 +46,7 @@ export default function ScaleList() {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Scales</h2>
-      
+
       <div className="flex items-center space-x-4">
         <input
           type="datetime-local"
@@ -60,33 +60,43 @@ export default function ScaleList() {
       {error && <p className="text-red-500">{error}</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
-        {scales.map((scale) => (
-          <Card key={scale.id} className="border shadow-md">
-            <CardHeader>
-              <CardTitle>{new Date(scale.eventDate).toLocaleString()}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-700 text-sm">
-                <strong>Created By:</strong> {scale.createdBy.name}
-              </p>
-              <p className="text-gray-700 text-sm mt-2">
-                <strong>Musicians:</strong>
-              </p>
-              <ul className="text-gray-600 text-sm list-disc ml-4">
-                {scale.scaleMusicianInstruments.map((entry) => (
-                  <li key={entry.id}>
-                    {entry.musician.name} - {entry.instrument.name}
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <Button variant="destructive" onClick={() => handleDeleteScale(scale.id)}>
-                Delete
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
+        {scales.map((scale) => {
+          return (
+            <Card key={scale.id} className="border shadow-md">
+              <CardHeader>
+                <CardTitle>
+                  {new Date(scale.eventDate).toLocaleString()}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-700 text-sm">
+                  <strong>Created By:</strong> {scale.createdBy.name}
+                </p>
+                <p className="text-gray-700 text-sm mt-2">
+                  <strong>Musicians:</strong>
+                </p>
+                <ul className="text-gray-600 text-sm list-disc ml-4">
+                  {scale.scaleMusician.map((scaleMusician) => (
+                    <li key={scaleMusician.id}>
+                      {scaleMusician.musician.name} - Instruments:{" "}
+                      {scaleMusician.instruments
+                        .map((instrument) => instrument.name)
+                        .join(", ")}
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+              <CardFooter className="flex justify-between">
+                <Button
+                  variant="destructive"
+                  onClick={() => handleDeleteScale(scale.id)}
+                >
+                  Delete
+                </Button>
+              </CardFooter>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
