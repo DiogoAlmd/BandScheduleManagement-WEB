@@ -32,6 +32,7 @@ export default function CreateMusicianModal({
 }: CreateMusicianModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [instruments, setInstruments] = useState<Instrument[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
 
   async function fetchInstruments() {
     try {
@@ -59,6 +60,7 @@ export default function CreateMusicianModal({
       onMusicianCreated(newMusician);
       reset();
       setSelectedInstruments([]);
+      setIsOpen(false);
     } catch {
       setError("Failed to add musician.");
     }
@@ -74,7 +76,7 @@ export default function CreateMusicianModal({
   >([]);
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button onClick={() => fetchInstruments()}>Add New Musician</Button>
       </DialogTrigger>
