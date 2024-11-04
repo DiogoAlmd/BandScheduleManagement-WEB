@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -34,26 +34,7 @@ export default function UpdateMusicianModal({
   const [selectedInstruments, setSelectedInstruments] = useState<
     { value: number; label: string }[]
   >([]);
-
-  useEffect(() => {
-    async function fetchInstruments() {
-      try {
-        const data = await getInstruments();
-        setInstruments(data);
-
-        setSelectedInstruments(
-          musician.instruments.map((inst) => ({
-            value: inst.id,
-            label: inst.name,
-          }))
-        );
-      } catch {
-        setError("Failed to load instruments.");
-      }
-    }
-
-    fetchInstruments();
-  }, [musician]);
+  const [isOpen, setIsOpen] = useState(false);
 
   const {
     register,
@@ -70,6 +51,27 @@ export default function UpdateMusicianModal({
     },
   });
 
+  async function fetchInstruments() {
+    try {
+      const data = await getInstruments();
+      setInstruments(data);
+
+      setSelectedInstruments(
+        musician.instruments.map((inst) => ({
+          value: inst.id,
+          label: inst.name,
+        }))
+      );
+      reset({
+        name: musician.name,
+        email: musician.email,
+        instrumentIds: musician.instruments.map((inst) => inst.id),
+      });
+    } catch {
+      setError("Failed to load instruments.");
+    }
+  }
+
   const onSubmit = async (data: UpdateMusicianSchema) => {
     try {
       const instrumentIds = selectedInstruments.map((inst) => inst.value);
@@ -77,6 +79,7 @@ export default function UpdateMusicianModal({
       onMusicianUpdated(updatedMusician);
       reset();
       setSelectedInstruments([]);
+      setIsOpen(false);
     } catch {
       setError("Failed to update musician.");
     }
@@ -88,9 +91,9 @@ export default function UpdateMusicianModal({
   }));
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>Edit Musician</Button>
+        <Button onClick={() => {setIsOpen(true); fetchInstruments();}}>Edit Musician</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

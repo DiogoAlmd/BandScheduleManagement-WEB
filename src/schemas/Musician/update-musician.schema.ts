@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export const updateMusicianSchema = z.object({
-  id: z.number().int().positive(),
   name: z.string().min(2, { message: "Name must be at least 2 characters." }).optional(),
   email: z.string().email({ message: "Invalid email address." }).optional(),
   password: z
