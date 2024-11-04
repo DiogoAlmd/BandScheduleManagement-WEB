@@ -1,5 +1,4 @@
 import { api } from "@/services/api";
-import { Musician } from "@/types/musician";
 import { Scale } from "@/types/scale";
 
 export const getScales = async (): Promise<Scale[]> => {
@@ -12,9 +11,15 @@ export const getScales = async (): Promise<Scale[]> => {
   }
 };
 
-export const createScale = async (scaleData: { eventDate: string; musicians: Musician[] }): Promise<Scale> => {
+export const createScale = async (
+  adminId: string,
+  scaleData: {
+    eventDate: string;
+    musicians: { musicianId: number; instrumentIds: number[] }[];
+  }
+): Promise<Scale> => {
   try {
-    const response = await api.post("/scale", scaleData);
+    const response = await api.post(`scale/${adminId}`, scaleData);
     return response.data;
   } catch (error) {
     console.error("Failed to create scale:", error);

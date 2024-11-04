@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getScales, createScale, deleteScale } from "@/services/data/ScaleService";
+import { getScales, deleteScale } from "@/services/data/ScaleService";
 import { Scale } from "@/types/scale";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import CreateScaleModal from "./CreateScaleModal";
 
 export default function ScaleList() {
   const [scales, setScales] = useState<Scale[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [newEventDate, setNewEventDate] = useState("");
 
   useEffect(() => {
     async function fetchData() {
@@ -22,17 +22,6 @@ export default function ScaleList() {
     }
     fetchData();
   }, []);
-
-  const handleAddScale = async () => {
-    if (!newEventDate) return;
-    try {
-      const newScale = await createScale({ eventDate: newEventDate, musicians: [] });
-      setScales([...scales, newScale]);
-      setNewEventDate("");
-    } catch {
-      setError("Failed to add scale.");
-    }
-  };
 
   const handleDeleteScale = async (id: number) => {
     try {
@@ -48,13 +37,7 @@ export default function ScaleList() {
       <h2 className="text-2xl font-bold">Scales</h2>
 
       <div className="flex items-center space-x-4">
-        <input
-          type="datetime-local"
-          value={newEventDate}
-          onChange={(e) => setNewEventDate(e.target.value)}
-          className="border p-2 rounded"
-        />
-        <Button onClick={handleAddScale}>Add Scale</Button>
+        <CreateScaleModal onScaleCreated={() => {}} />
       </div>
 
       {error && <p className="text-red-500">{error}</p>}
