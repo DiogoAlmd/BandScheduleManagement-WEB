@@ -53,6 +53,7 @@ export default function MusicianList() {
 
   return (
     <div className="space-y-6">
+      <h2 className="text-2xl font-bold">Musicians</h2>
       {error && <p className="text-red-500">{error}</p>}
 
       <CreateMusicianModal onMusicianCreated={handleMusicianCreated} />

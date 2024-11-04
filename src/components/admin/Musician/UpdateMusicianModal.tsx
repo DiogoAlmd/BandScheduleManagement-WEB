@@ -77,13 +77,18 @@ export default function UpdateMusicianModal({
 
   const onSubmit = async (data: UpdateMusicianSchema) => {
     try {
+      // Remove password from data if it's empty or undefined
+      const requestData = data.password
+        ? data
+        : { ...data, password: undefined };
       const instrumentIds = selectedInstruments.map((inst) => inst.value);
+
       const updatedMusician = await updateMusician(musician.id, {
-        ...data,
+        ...requestData,
         instrumentIds,
       });
       onMusicianUpdated(updatedMusician);
-      reset();
+      reset(requestData);
       setSelectedInstruments([]);
       setIsOpen(false);
     } catch {
