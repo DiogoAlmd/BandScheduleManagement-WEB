@@ -60,13 +60,16 @@ export default function ScaleList() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
         {scales.map((scale) => {
           return (
-            <Card key={scale.id} className="border shadow-md">
+            <Card
+              key={scale.id}
+              className="border shadow-md flex flex-col h-full"
+            >
               <CardHeader>
                 <CardTitle>
                   {new Date(scale.eventDate).toLocaleString()}
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-grow">
                 <p className="text-gray-700 text-sm">
                   <strong>Created By:</strong> {scale.createdBy.name}
                 </p>
