@@ -29,7 +29,7 @@ export const createScale = async (
 
 export const deleteScale = async (id: number): Promise<void> => {
   try {
-    await api.delete(`/scale/${id}`);
+    await api.delete(`/scale/${id}/delete`);
   } catch (error) {
     console.error("Failed to delete scale:", error);
     throw error;
