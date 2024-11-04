@@ -4,8 +4,15 @@ import { useEffect, useState } from "react";
 import { getScales, deleteScale } from "@/services/data/ScaleService";
 import { Scale } from "@/types/scale";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import CreateScaleModal from "./CreateScaleModal";
+import UpdateScaleModal from "./UpdateScaleModal";
 
 export default function ScaleList() {
   const [scales, setScales] = useState<Scale[]>([]);
@@ -30,6 +37,14 @@ export default function ScaleList() {
     } catch {
       setError("Failed to delete scale.");
     }
+  };
+
+  const handleUpdateScale = (updatedScale: Scale) => {
+    setScales((prevScales) =>
+      prevScales.map((scale) =>
+        scale.id === updatedScale.id ? updatedScale : scale
+      )
+    );
   };
 
   return (
@@ -70,6 +85,10 @@ export default function ScaleList() {
                 </ul>
               </CardContent>
               <CardFooter className="flex justify-between">
+                <UpdateScaleModal
+                  scale={scale}
+                  onScaleUpdated={handleUpdateScale}
+                />
                 <Button
                   variant="destructive"
                   onClick={() => handleDeleteScale(scale.id)}

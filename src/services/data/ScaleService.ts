@@ -35,3 +35,19 @@ export const deleteScale = async (id: number): Promise<void> => {
     throw error;
   }
 };
+
+export const updateScale = async (
+  scaleId: number,
+  updateData: {
+    eventDate?: string;
+    musicians?: { musicianId: number; instrumentIds: number[] }[];
+  }
+): Promise<Scale> => {
+  try {
+    const response = await api.patch(`/scale/${scaleId}/update`, updateData);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to update scale:", error);
+    throw error;
+  }
+};
