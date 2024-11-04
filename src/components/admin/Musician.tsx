@@ -5,6 +5,7 @@ import { getMusicians, deleteMusician } from "@/services/data/MusiciansService";
 import { Musician } from "@/types/musician";
 import { Button } from "@/components/ui/button";
 import CreateMusicianModal from "@/components/admin/CreateMusicianModal";
+import UpdateMusicianModal from "./UpdateMusicianModal";
 
 export default function MusicianList() {
   const [musicians, setMusicians] = useState<Musician[]>([]);
@@ -12,13 +13,26 @@ export default function MusicianList() {
 
   useEffect(() => {
     async function fetchData() {
-      setMusicians(await getMusicians());
+      try {
+        const data = await getMusicians();
+        setMusicians(data);
+      } catch {
+        setError("Failed to load musicians.");
+      }
     }
     fetchData();
   }, []);
 
   const handleMusicianCreated = (newMusician: Musician) => {
     setMusicians([...musicians, newMusician]);
+  };
+
+  const handleMusicianUpdated = (updatedMusician: Musician) => {
+    setMusicians((prevMusicians) =>
+      prevMusicians.map((musician) =>
+        musician.id === updatedMusician.id ? updatedMusician : musician
+      )
+    );
   };
 
   const handleDeleteMusician = async (id: number) => {
@@ -32,7 +46,6 @@ export default function MusicianList() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold mb-4">Admin Dashboard - Musicians</h1>
       {error && <p className="text-red-500">{error}</p>}
 
       <CreateMusicianModal onMusicianCreated={handleMusicianCreated} />
@@ -46,9 +59,15 @@ export default function MusicianList() {
               </p>
               <p>Instruments: {musician.instruments.map((inst) => inst.name).join(", ")}</p>
             </div>
-            <Button variant="destructive" onClick={() => handleDeleteMusician(musician.id)}>
-              Delete
-            </Button>
+            <div className="flex space-x-2">
+              <UpdateMusicianModal
+                musician={musician}
+                onMusicianUpdated={handleMusicianUpdated}
+              />
+              <Button variant="destructive" onClick={() => handleDeleteMusician(musician.id)}>
+                Delete
+              </Button>
+            </div>
           </li>
         ))}
       </ul>

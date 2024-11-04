@@ -31,6 +31,7 @@ export const updateMusician = async (
   musicianData: { name?: string; email?: string; instrumentIds?: number[] }
 ): Promise<Musician> => {
   try {
+    console.log(musicianData)
     const response = await api.put(`/musician/${id}`, musicianData);
     return response.data;
   } catch (error) {
