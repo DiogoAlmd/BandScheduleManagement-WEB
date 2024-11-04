@@ -1,10 +1,19 @@
 export interface Scale {
+  id: number;
+  eventDate: string;
+  createdBy: {
     id: number;
-    eventDate: string;
-    musicians: {
+    name: string;
+  };
+  scaleMusicianInstruments: {
+    id: number;
+    musician: {
       id: number;
       name: string;
-      instrument: string;
-    }[];
-  }
-  
+    };
+    instrument: {
+      id: number;
+      name: string;
+    };
+  }[];
+}
