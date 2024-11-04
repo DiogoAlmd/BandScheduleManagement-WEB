@@ -16,7 +16,10 @@ import { getInstruments } from "@/services/data/InstrumentService";
 import { Musician } from "@/types/musician";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UpdateMusicianSchema, updateMusicianSchema } from "@/schemas/Musician/update-musician.schema";
+import {
+  UpdateMusicianSchema,
+  updateMusicianSchema,
+} from "@/schemas/Musician/update-musician.schema";
 import { Instrument } from "@/types/instrument";
 import Select from "react-select";
 
@@ -75,7 +78,10 @@ export default function UpdateMusicianModal({
   const onSubmit = async (data: UpdateMusicianSchema) => {
     try {
       const instrumentIds = selectedInstruments.map((inst) => inst.value);
-      const updatedMusician = await updateMusician(musician.id, { ...data, instrumentIds });
+      const updatedMusician = await updateMusician(musician.id, {
+        ...data,
+        instrumentIds,
+      });
       onMusicianUpdated(updatedMusician);
       reset();
       setSelectedInstruments([]);
@@ -93,13 +99,23 @@ export default function UpdateMusicianModal({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button onClick={() => {setIsOpen(true); fetchInstruments();}}>Edit Musician</Button>
+        <Button
+          onClick={() => {
+            setIsOpen(true);
+            fetchInstruments();
+          }}
+        >
+          Edit Musician
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit Musician</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col space-y-4"
+        >
           <div>
             <Input placeholder="Name" {...register("name")} />
             {errors.name && (
@@ -113,12 +129,24 @@ export default function UpdateMusicianModal({
             )}
           </div>
           <div>
+            <Input
+              type="password"
+              placeholder="Password"
+              {...register("password")}
+            />
+            {errors.password && (
+              <p className="text-red-500 text-sm">{errors.password.message}</p>
+            )}
+          </div>
+          <div>
             <Select
               options={instrumentOptions}
               isMulti
               value={selectedInstruments}
               onChange={(selected) => {
-                setSelectedInstruments(selected as { value: number; label: string }[]);
+                setSelectedInstruments(
+                  selected as { value: number; label: string }[]
+                );
                 setValue(
                   "instrumentIds",
                   selected ? selected.map((s) => s.value) : []
@@ -129,7 +157,9 @@ export default function UpdateMusicianModal({
               classNamePrefix="react-select"
             />
             {errors.instrumentIds && (
-              <p className="text-red-500 text-sm">{errors.instrumentIds.message}</p>
+              <p className="text-red-500 text-sm">
+                {errors.instrumentIds.message}
+              </p>
             )}
           </div>
           {error && <p className="text-red-500">{error}</p>}

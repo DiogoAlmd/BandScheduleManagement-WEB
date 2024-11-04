@@ -4,7 +4,13 @@ import { useEffect, useState } from "react";
 import { getMusicians, deleteMusician } from "@/services/data/MusiciansService";
 import { Musician } from "@/types/musician";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import CreateMusicianModal from "./CreateMusicianModal";
 import UpdateMusicianModal from "./UpdateMusicianModal";
 
@@ -60,12 +66,19 @@ export default function MusicianList() {
             </CardHeader>
             <CardContent>
               <p className="text-gray-700 text-sm">
-                <strong>Instruments:</strong> {musician.instruments.map((inst) => inst.name).join(", ")}
+                <strong>Instruments:</strong>{" "}
+                {musician.instruments.map((inst) => inst.name).join(", ")}
               </p>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <UpdateMusicianModal musician={musician} onMusicianUpdated={handleMusicianUpdated} />
-              <Button variant="destructive" onClick={() => handleDeleteMusician(musician.id)}>
+              <UpdateMusicianModal
+                musician={musician}
+                onMusicianUpdated={handleMusicianUpdated}
+              />
+              <Button
+                variant="destructive"
+                onClick={() => handleDeleteMusician(musician.id)}
+              >
                 Delete
               </Button>
             </CardFooter>

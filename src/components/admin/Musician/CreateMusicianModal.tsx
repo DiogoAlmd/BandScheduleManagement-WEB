@@ -84,7 +84,10 @@ export default function CreateMusicianModal({
         <DialogHeader>
           <DialogTitle>Add Musician</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col space-y-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col space-y-4"
+        >
           <div>
             <Input placeholder="Name" {...register("name")} />
             {errors.name && (
@@ -98,7 +101,11 @@ export default function CreateMusicianModal({
             )}
           </div>
           <div>
-            <Input type="password" placeholder="Password" {...register("password")} />
+            <Input
+              type="password"
+              placeholder="Password"
+              {...register("password")}
+            />
             {errors.password && (
               <p className="text-red-500 text-sm">{errors.password.message}</p>
             )}
@@ -109,7 +116,9 @@ export default function CreateMusicianModal({
               isMulti
               value={selectedInstruments}
               onChange={(selected) => {
-                setSelectedInstruments(selected as { value: number; label: string }[]);
+                setSelectedInstruments(
+                  selected as { value: number; label: string }[]
+                );
                 setValue(
                   "instrumentIds",
                   selected ? selected.map((s) => s.value) : []
@@ -120,7 +129,9 @@ export default function CreateMusicianModal({
               classNamePrefix="react-select"
             />
             {errors.instrumentIds && (
-              <p className="text-red-500 text-sm">{errors.instrumentIds.message}</p>
+              <p className="text-red-500 text-sm">
+                {errors.instrumentIds.message}
+              </p>
             )}
           </div>
           {error && <p className="text-red-500">{error}</p>}

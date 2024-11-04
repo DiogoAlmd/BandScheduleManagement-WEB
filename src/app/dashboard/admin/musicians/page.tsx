@@ -1,7 +1,7 @@
 "use client";
 
-import Musician from "@/components/admin/Musician/Musician";
+import MusicianList from "@/components/admin/Musician/Musician";
 
 export default function MusiciansPage() {
-  return <Musician />
+  return <MusicianList />
 }
