@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "../ui/dialog";
+} from "@/components/ui/dialog";
 import { updateMusician } from "@/services/data/MusiciansService";
 import { getInstruments } from "@/services/data/InstrumentService";
 import { Musician } from "@/types/musician";

@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { getMusicians, deleteMusician } from "@/services/data/MusiciansService";
 import { Musician } from "@/types/musician";
 import { Button } from "@/components/ui/button";
-import CreateMusicianModal from "@/components/admin/CreateMusicianModal";
-import UpdateMusicianModal from "./UpdateMusicianModal";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import CreateMusicianModal from "./CreateMusicianModal";
+import UpdateMusicianModal from "./UpdateMusicianModal";
 
 export default function MusicianList() {
   const [musicians, setMusicians] = useState<Musician[]>([]);
