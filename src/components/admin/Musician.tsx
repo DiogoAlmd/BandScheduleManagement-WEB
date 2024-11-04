@@ -6,6 +6,7 @@ import { Musician } from "@/types/musician";
 import { Button } from "@/components/ui/button";
 import CreateMusicianModal from "@/components/admin/CreateMusicianModal";
 import UpdateMusicianModal from "./UpdateMusicianModal";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 
 export default function MusicianList() {
   const [musicians, setMusicians] = useState<Musician[]>([]);
@@ -50,27 +51,27 @@ export default function MusicianList() {
 
       <CreateMusicianModal onMusicianCreated={handleMusicianCreated} />
 
-      <ul className="space-y-2 mt-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
         {musicians.map((musician) => (
-          <li key={musician.id} className="flex justify-between items-center p-2 border rounded">
-            <div>
-              <p>
-                {musician.name} - {musician.email}
+          <Card key={musician.id} className="border shadow-md">
+            <CardHeader>
+              <CardTitle>{musician.name}</CardTitle>
+              <p className="text-sm text-gray-500">{musician.email}</p>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-700 text-sm">
+                <strong>Instruments:</strong> {musician.instruments.map((inst) => inst.name).join(", ")}
               </p>
-              <p>Instruments: {musician.instruments.map((inst) => inst.name).join(", ")}</p>
-            </div>
-            <div className="flex space-x-2">
-              <UpdateMusicianModal
-                musician={musician}
-                onMusicianUpdated={handleMusicianUpdated}
-              />
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              <UpdateMusicianModal musician={musician} onMusicianUpdated={handleMusicianUpdated} />
               <Button variant="destructive" onClick={() => handleDeleteMusician(musician.id)}>
                 Delete
               </Button>
-            </div>
-          </li>
+            </CardFooter>
+          </Card>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
