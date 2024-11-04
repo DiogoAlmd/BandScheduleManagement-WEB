@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -33,18 +33,14 @@ export default function CreateMusicianModal({
   const [error, setError] = useState<string | null>(null);
   const [instruments, setInstruments] = useState<Instrument[]>([]);
 
-  useEffect(() => {
-    async function fetchInstruments() {
-      try {
-        const data = await getInstruments();
-        setInstruments(data);
-      } catch {
-        setError("Failed to load instruments.");
-      }
+  async function fetchInstruments() {
+    try {
+      const data = await getInstruments();
+      setInstruments(data);
+    } catch {
+      setError("Failed to load instruments.");
     }
-
-    fetchInstruments();
-  }, []);
+  }
 
   const {
     register,
@@ -80,7 +76,7 @@ export default function CreateMusicianModal({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Add New Musician</Button>
+        <Button onClick={() => fetchInstruments()}>Add New Musician</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
