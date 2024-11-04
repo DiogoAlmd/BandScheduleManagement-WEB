@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,6 +17,7 @@ import { getInstruments } from "@/services/data/InstrumentService";
 import { Musician } from "@/types/musician";
 import { Instrument } from "@/types/instrument";
 import Select, { MultiValue } from "react-select";
+import { Plus, Trash2 } from "lucide-react";
 import { Scale } from "@/types/scale";
 
 interface UpdateScaleModalProps {
@@ -31,23 +32,30 @@ export default function UpdateScaleModal({
   const [error, setError] = useState<string | null>(null);
   const [musicians, setMusicians] = useState<Musician[]>([]);
   const [instruments, setInstruments] = useState<Instrument[]>([]);
-  const [eventDate, setEventDate] = useState<string>(scale.eventDate);
+  const [eventDate, setEventDate] = useState<string>(
+    new Date(scale.eventDate).toISOString().slice(0, 16)
+  );
   const [musicianSelections, setMusicianSelections] = useState<
     { musicianId: number | null; instrumentIds: number[] }[]
-  >(scale.scaleMusician.map((sm) => ({
-    musicianId: sm.musician.id,
-    instrumentIds: sm.instruments.map((inst) => inst.id),
-  })));
+  >(
+    scale.scaleMusician.map((sm) => ({
+      musicianId: sm.musician.id,
+      instrumentIds: sm.instruments.map((inst) => inst.id),
+    }))
+  );
   const [isOpen, setIsOpen] = useState(false);
 
-  async function fetchData() {
-    try {
-      setMusicians(await getMusicians());
-      setInstruments(await getInstruments());
-    } catch {
-      setError("Failed to load musicians or instruments.");
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setMusicians(await getMusicians());
+        setInstruments(await getInstruments());
+      } catch {
+        setError("Failed to load musicians or instruments.");
+      }
     }
-  }
+    fetchData();
+  }, []);
 
   const musicianOptions = musicians.map((musician) => ({
     value: musician.id,
@@ -81,6 +89,19 @@ export default function UpdateScaleModal({
     setMusicianSelections(newSelections);
   };
 
+  const handleAddMusicianSelection = () => {
+    setMusicianSelections([
+      ...musicianSelections,
+      { musicianId: null, instrumentIds: [] },
+    ]);
+  };
+
+  const handleRemoveMusicianSelection = (index: number) => {
+    const newSelections = [...musicianSelections];
+    newSelections.splice(index, 1);
+    setMusicianSelections(newSelections);
+  };
+
   const onSubmit = async () => {
     try {
       const filteredMusicians = musicianSelections
@@ -107,7 +128,7 @@ export default function UpdateScaleModal({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button onClick={() => {setIsOpen(true); fetchData()}}>Edit Scale</Button>
+        <Button onClick={() => setIsOpen(true)}>Edit Scale</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -146,8 +167,22 @@ export default function UpdateScaleModal({
                 }
                 placeholder="Select Instruments"
               />
+              <Button
+                variant="outline"
+                onClick={() => handleRemoveMusicianSelection(index)}
+                className="ml-2"
+              >
+                <Trash2 />
+              </Button>
             </div>
           ))}
+          <Button
+            variant="outline"
+            onClick={handleAddMusicianSelection}
+            className="flex items-center"
+          >
+            <Plus className="mr-2" /> Add Musician
+          </Button>
           {error && <p className="text-red-500">{error}</p>}
         </div>
         <DialogFooter>
