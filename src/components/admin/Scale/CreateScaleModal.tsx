@@ -13,9 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { createScale } from "@/services/data/ScaleService";
 import { getMusicians } from "@/services/data/MusiciansService";
-import { getInstruments } from "@/services/data/InstrumentService";
 import { Musician } from "@/types/musician";
-import { Instrument } from "@/types/instrument";
 import Select, { MultiValue } from "react-select";
 import { Plus, Trash2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
@@ -29,11 +27,10 @@ export default function CreateScaleModal({
 }: CreateScaleModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [musicians, setMusicians] = useState<Musician[]>([]);
-  const [instruments, setInstruments] = useState<Instrument[]>([]);
   const [eventDate, setEventDate] = useState<string>("");
   const [musicianSelections, setMusicianSelections] = useState<
-    { musicianId: number | null; instrumentIds: number[] }[]
-  >([{ musicianId: null, instrumentIds: [] }]);
+    { musicianId: number | null; instrumentIds: number[]; musicianInstruments: { value: number; label: string }[] }[]
+  >([{ musicianId: null, instrumentIds: [], musicianInstruments: [] }]);
 
   const { userId } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -42,7 +39,6 @@ export default function CreateScaleModal({
     async function fetchData() {
       try {
         setMusicians(await getMusicians());
-        setInstruments(await getInstruments());
       } catch {
         setError("Failed to load musicians or instruments.");
       }
@@ -55,15 +51,10 @@ export default function CreateScaleModal({
     label: musician.name,
   }));
 
-  const instrumentOptions = instruments.map((instrument) => ({
-    value: instrument.id,
-    label: instrument.name,
-  }));
-
   const handleAddMusicianSelection = () => {
     setMusicianSelections([
       ...musicianSelections,
-      { musicianId: null, instrumentIds: [] },
+      { musicianId: null, instrumentIds: [], musicianInstruments: [] },
     ]);
   };
 
@@ -72,9 +63,22 @@ export default function CreateScaleModal({
     index: number
   ) => {
     const newSelections = [...musicianSelections];
-    newSelections[index].musicianId = selectedMusician
-      ? selectedMusician.value
-      : null;
+    if (selectedMusician) {
+      const selectedMusicianData = musicians.find(
+        (musician) => musician.id === selectedMusician.value
+      );
+      if (selectedMusicianData) {
+        newSelections[index].musicianId = selectedMusician.value;
+        newSelections[index].musicianInstruments = selectedMusicianData.instruments.map((inst) => ({
+          value: inst.id,
+          label: inst.name,
+        }));
+      }
+    } else {
+      newSelections[index].musicianId = null;
+      newSelections[index].musicianInstruments = [];
+    }
+    newSelections[index].instrumentIds = [];
     setMusicianSelections(newSelections);
   };
 
@@ -117,7 +121,7 @@ export default function CreateScaleModal({
         musicians: filteredMusicians,
       });
       onScaleCreated();
-      setMusicianSelections([{ musicianId: null, instrumentIds: [] }]);
+      setMusicianSelections([{ musicianId: null, instrumentIds: [], musicianInstruments: [] }]);
       setEventDate("");
       setIsOpen(false);
     } catch {
@@ -157,9 +161,9 @@ export default function CreateScaleModal({
                 placeholder="Select Musician"
               />
               <Select
-                options={instrumentOptions}
+                options={selection.musicianInstruments}
                 isMulti
-                value={instrumentOptions.filter((option) =>
+                value={selection.musicianInstruments.filter((option) =>
                   selection.instrumentIds.includes(option.value)
                 )}
                 onChange={(selected) =>

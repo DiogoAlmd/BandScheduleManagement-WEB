@@ -13,9 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { updateScale } from "@/services/data/ScaleService";
 import { getMusicians } from "@/services/data/MusiciansService";
-import { getInstruments } from "@/services/data/InstrumentService";
 import { Musician } from "@/types/musician";
-import { Instrument } from "@/types/instrument";
 import Select, { MultiValue } from "react-select";
 import { Plus, Trash2 } from "lucide-react";
 import { Scale } from "@/types/scale";
@@ -31,16 +29,19 @@ export default function UpdateScaleModal({
 }: UpdateScaleModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [musicians, setMusicians] = useState<Musician[]>([]);
-  const [instruments, setInstruments] = useState<Instrument[]>([]);
   const [eventDate, setEventDate] = useState<string>(
     new Date(scale.eventDate).toISOString().slice(0, 16)
   );
   const [musicianSelections, setMusicianSelections] = useState<
-    { musicianId: number | null; instrumentIds: number[] }[]
+    { musicianId: number | null; instrumentIds: number[]; musicianInstruments: { value: number; label: string }[] }[]
   >(
     scale.scaleMusician.map((sm) => ({
       musicianId: sm.musician.id,
       instrumentIds: sm.instruments.map((inst) => inst.id),
+      musicianInstruments: sm.instruments.map((inst) => ({
+        value: inst.id,
+        label: inst.name,
+      })),
     }))
   );
   const [isOpen, setIsOpen] = useState(false);
@@ -48,9 +49,8 @@ export default function UpdateScaleModal({
   async function fetchData() {
     try {
       setMusicians(await getMusicians());
-      setInstruments(await getInstruments());
     } catch {
-      setError("Failed to load musicians or instruments.");
+      setError("Failed to load musicians.");
     }
   }
 
@@ -59,19 +59,27 @@ export default function UpdateScaleModal({
     label: musician.name,
   }));
 
-  const instrumentOptions = instruments.map((instrument) => ({
-    value: instrument.id,
-    label: instrument.name,
-  }));
-
   const handleMusicianChange = (
     selectedMusician: { value: number } | null,
     index: number
   ) => {
     const newSelections = [...musicianSelections];
-    newSelections[index].musicianId = selectedMusician
-      ? selectedMusician.value
-      : null;
+    if (selectedMusician) {
+      const selectedMusicianData = musicians.find(
+        (musician) => musician.id === selectedMusician.value
+      );
+      if (selectedMusicianData) {
+        newSelections[index].musicianId = selectedMusician.value;
+        newSelections[index].musicianInstruments = selectedMusicianData.instruments.map((inst) => ({
+          value: inst.id,
+          label: inst.name,
+        }));
+      }
+    } else {
+      newSelections[index].musicianId = null;
+      newSelections[index].musicianInstruments = [];
+    }
+    newSelections[index].instrumentIds = [];
     setMusicianSelections(newSelections);
   };
 
@@ -89,7 +97,7 @@ export default function UpdateScaleModal({
   const handleAddMusicianSelection = () => {
     setMusicianSelections([
       ...musicianSelections,
-      { musicianId: null, instrumentIds: [] },
+      { musicianId: null, instrumentIds: [], musicianInstruments: [] },
     ]);
   };
 
@@ -154,9 +162,9 @@ export default function UpdateScaleModal({
                 placeholder="Select Musician"
               />
               <Select
-                options={instrumentOptions}
+                options={selection.musicianInstruments}
                 isMulti
-                value={instrumentOptions.filter((option) =>
+                value={selection.musicianInstruments.filter((option) =>
                   selection.instrumentIds.includes(option.value)
                 )}
                 onChange={(selected) =>
