@@ -19,3 +19,13 @@ export const createInstrument = async (name: string): Promise<Instrument> => {
 export const deleteInstrument = async (id: number): Promise<void> => {
   await api.delete(`/instrument/${id}`);
 };
+
+export const getMyInstruments = async (musicianId: string): Promise<Instrument[]> => {
+  try {
+    const response = await api.get(`/musician/myInstruments/${musicianId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch musician instruments:", error);
+    return [];
+  }
+};
