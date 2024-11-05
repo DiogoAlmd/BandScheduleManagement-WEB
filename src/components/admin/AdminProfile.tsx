@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import UpdateAdminForm from "./Forms/UpdateAdminForm";
+import UpdateAdminForm from "../Forms/UpdateAdminForm";
 import { getAdminDetails } from "@/services/data/AdminService";
 import { Admin } from "@/types/admin";
 import { useAuth } from "@/context/AuthContext";

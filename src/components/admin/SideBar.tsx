@@ -18,6 +18,7 @@ export default function AdminSidebar() {
         <Button onClick={() => router.push("/dashboard/admin/scales")}>Scales</Button>
         <Button onClick={() => router.push("/dashboard/admin/musicians")}>Musicians</Button>
         <Button onClick={() => router.push("/dashboard/admin/instruments")}>Instruments</Button>
+        <Button onClick={() => router.push("/dashboard/admin/users")}>Users</Button>
       </nav>
     </aside>
   );
