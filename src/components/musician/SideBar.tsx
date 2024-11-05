@@ -16,7 +16,6 @@ export default function MusicianSidebar() {
       </Button>
       <nav className="flex flex-col gap-4">
         <Button onClick={() => router.push("/dashboard/musician/scales")}>Scales</Button>
-        <Button onClick={() => router.push("/dashboard/musician/instruments")}>Instruments</Button>
       </nav>
     </aside>
   );
