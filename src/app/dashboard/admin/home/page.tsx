@@ -1,5 +1,7 @@
 "use client";
-import AdminHome from "@/components/admin/AdminHome";
+
+import AdminHome from "@/pages/Admin/AdminHome";
+
 
 export default function AdminHomePage() {
   return (

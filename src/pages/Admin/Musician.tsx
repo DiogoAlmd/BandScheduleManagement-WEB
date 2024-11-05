@@ -11,8 +11,9 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import CreateMusicianModal from "./CreateMusicianModal";
-import UpdateMusicianModal from "./UpdateMusicianModal";
+import CreateMusicianModal from "@/components/Modals/CreateMusicianModal";
+import UpdateMusicianModal from "@/components/Modals/UpdateMusicianModal";
+
 
 export default function MusicianList() {
   const [musicians, setMusicians] = useState<Musician[]>([]);

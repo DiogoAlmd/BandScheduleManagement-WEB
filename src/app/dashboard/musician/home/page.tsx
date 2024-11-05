@@ -1,6 +1,6 @@
 "use client";
 
-import MusicianHome from "@/components/musician/MusicianHome";
+import MusicianHome from "@/pages/Musician/MusicianHome";
 
 export default function MusicianHomePage() {
   return (

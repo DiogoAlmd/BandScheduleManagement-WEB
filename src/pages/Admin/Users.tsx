@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/card";
 
 import { Admin } from "@/types/admin";
-import UpdateAdminModal from "./Modals/UpdateAdminModal";
-import CreateAdminModal from "./Modals/CreateAdminModal";
+import CreateAdminModal from "@/components/Modals/CreateAdminModal";
+import UpdateAdminModal from "@/components/Modals/UpdateAdminModal";
 
 export default function UsersList() {
   const [users, setUsers] = useState<Admin[]>([]);

@@ -1,6 +1,6 @@
 "use client";
 
-import ScaleList from "@/components/admin/Scale/Scale";
+import ScaleList from "@/pages/Admin/Scale";
 
 export default function ScalesPage() {
   return <ScaleList />;

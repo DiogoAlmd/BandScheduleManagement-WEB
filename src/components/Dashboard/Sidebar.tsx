@@ -1,8 +1,8 @@
 "use client";
 
 import { useDashboard } from "@/context/DashboardContext";
-import AdminSidebar from "@/components/admin/SideBar";
-import MusicianSidebar from "@/components/musician/SideBar";
+import AdminSidebar from "@/components/Sidebar/AdminSidebar";
+import MusicianSidebar from "@/components/Sidebar/MusicianSidebar";
 
 const Sidebar = () => {
   const { isAdmin, isMusician } = useDashboard();

@@ -11,8 +11,9 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import CreateScaleModal from "./CreateScaleModal";
-import UpdateScaleModal from "./UpdateScaleModal";
+import CreateScaleModal from "@/components/Modals/CreateScaleModal";
+import UpdateScaleModal from "@/components/Modals/UpdateScaleModal";
+
 
 export default function ScaleList() {
   const [scales, setScales] = useState<Scale[]>([]);

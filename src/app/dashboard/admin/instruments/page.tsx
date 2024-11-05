@@ -1,6 +1,6 @@
 "use client";
 
-import InstrumentsList from "@/components/admin/Instruments";
+import InstrumentsList from "@/pages/Admin/Instruments";
 
 export default function InstrumentsPage() {
   return <InstrumentsList />;
