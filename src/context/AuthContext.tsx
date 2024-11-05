@@ -56,8 +56,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setEmail(decodedToken.email);
         setIsAuthenticated(true);
       }
+      if (decodedToken.role === "admin") router.push("/dashboard/admin/home");
+      else if (decodedToken.role === "musician") router.push("/dashboard/musician/home");
 
-      router.push("/dashboard/admin/home");
     } catch (error) {
       console.error("Login error:", error);
     }

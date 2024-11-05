@@ -7,9 +7,16 @@ export default function MusicianSidebar() {
 
   return (
     <aside className="w-64 bg-gray-800 text-white flex flex-col p-4">
-      <div className="font-semibold text-xl mb-4">Musician Dashboard</div>
+      <Button
+        variant="link"
+        className="font-semibold text-xl mb-4 text-white hover:underline text-left p-0"
+        onClick={() => router.push("/dashboard/musician/home")}
+      >
+        Admin Dashboard
+      </Button>
       <nav className="flex flex-col gap-4">
-        <Button onClick={() => router.push("/scales")}>Scales</Button>
+        <Button onClick={() => router.push("/dashboard/musician/scales")}>Scales</Button>
+        <Button onClick={() => router.push("/dashboard/musician/instruments")}>Instruments</Button>
       </nav>
     </aside>
   );
