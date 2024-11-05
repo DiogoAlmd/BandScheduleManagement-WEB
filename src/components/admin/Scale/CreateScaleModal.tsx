@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -35,16 +35,13 @@ export default function CreateScaleModal({
   const { userId } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        setMusicians(await getMusicians());
-      } catch {
-        setError("Failed to load musicians or instruments.");
-      }
+  async function fetchData() {
+    try {
+      setMusicians(await getMusicians());
+    } catch {
+      setError("Failed to load musicians or instruments.");
     }
-    fetchData();
-  }, []);
+  }
 
   const musicianOptions = musicians.map((musician) => ({
     value: musician.id,
@@ -132,7 +129,7 @@ export default function CreateScaleModal({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button onClick={() => setIsOpen(true)}>Add New Scale</Button>
+        <Button onClick={() => {setIsOpen(true); fetchData()}}>Add New Scale</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
