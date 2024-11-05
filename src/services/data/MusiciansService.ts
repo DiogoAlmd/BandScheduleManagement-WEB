@@ -11,6 +11,17 @@ export const getMusicians = async (): Promise<Musician[]> => {
   }
 };
 
+export const getMusicianDetails = async (id: string): Promise<Musician> => {
+  console.log(`/musician/${id}`)
+  try {
+    const response = await api.get(`/musician/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch musician details:", error);
+    throw error;
+  }
+}
+
 export const createMusician = async (musicianData: {
   name: string;
   email: string;
