@@ -4,14 +4,16 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { decode } from "jsonwebtoken";
 import { api } from "@/services/api";
+import { Instrument } from "@/types/instrument";
+import { Admin } from "@/types/admin";
+import { Musician } from "@/types/musician";
 
 interface AuthContextData {
   isAuthenticated: boolean;
-  userRole: string | null;
-  userId: number | null;
-  email: string | null;
+  user: Admin | Musician | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  refreshToken: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -20,13 +22,13 @@ interface JwtPayload {
   userId: number;
   email: string;
   role: string;
+  name: string;
+  instruments: Instrument[];
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState<string | null>(null);
-  const [userId, setUserId] = useState<number | null>(null);
-  const [email, setEmail] = useState<string | null>(null);
+  const [user, setUser] = useState<Admin | Musician | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -36,9 +38,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const decodedToken = decode(token) as JwtPayload;
       if (decodedToken) {
         setIsAuthenticated(true);
-        setUserRole(decodedToken.role);
-        setUserId(decodedToken.userId);
-        setEmail(decodedToken.email);
+        setUser({
+          id: decodedToken.userId,
+          email: decodedToken.email,
+          name: decodedToken.name,
+          role: decodedToken.role as "admin" | "musician",
+          instruments: decodedToken.instruments || [],
+        });
       }
     }
   }, []);
@@ -51,30 +57,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       Cookies.set("token", accessToken, { expires: 1 });
       const decodedToken = decode(accessToken) as JwtPayload;
       if (decodedToken) {
-        setUserRole(decodedToken.role);
-        setUserId(decodedToken.userId);
-        setEmail(decodedToken.email);
         setIsAuthenticated(true);
-      }
-      if (decodedToken.role === "admin") router.push("/dashboard/admin/home");
-      else if (decodedToken.role === "musician") router.push("/dashboard/musician/home");
+        setUser({
+          id: decodedToken.userId,
+          email: decodedToken.email,
+          name: decodedToken.name,
+          role: decodedToken.role as "admin" | "musician",
+          instruments: decodedToken.instruments || [],
+        });
 
+        if (decodedToken.role === "admin") router.push("/dashboard/admin/home");
+        else if (decodedToken.role === "musician") router.push("/dashboard/musician/home");
+      }
     } catch (error) {
       console.error("Login error:", error);
+    }
+  }
+
+  async function refreshToken() {
+    try {
+      const response = await api.post("/auth/refresh-token");
+      const { accessToken } = response.data;
+
+      Cookies.set("token", accessToken, { expires: 1 });
+      const decodedToken = decode(accessToken) as JwtPayload;
+      if (decodedToken) {
+        setUser({
+          id: decodedToken.userId,
+          email: decodedToken.email,
+          name: decodedToken.name,
+          role: decodedToken.role as "admin" | "musician",
+          instruments: decodedToken.instruments || [],
+        });
+      }
+    } catch (error) {
+      console.error("Error refreshing token:", error);
     }
   }
 
   function logout() {
     Cookies.remove("token");
     setIsAuthenticated(false);
-    setUserRole(null);
-    setUserId(null);
-    setEmail(null);
+    setUser(null);
     router.push("/login/sign-in");
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, userRole, userId, email, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, refreshToken }}>
       {children}
     </AuthContext.Provider>
   );

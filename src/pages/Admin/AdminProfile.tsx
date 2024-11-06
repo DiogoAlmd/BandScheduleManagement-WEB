@@ -1,32 +1,33 @@
 "use client";
-import { useEffect, useState } from "react";
-import { getAdminDetails } from "@/services/data/AdminService";
+import { useState } from "react";
 import { Admin } from "@/types/admin";
 import { useAuth } from "@/context/AuthContext";
 import UpdateAdminForm from "@/components/Forms/UpdateAdminForm";
+import { UpdateUserSchema } from "@/schemas/User/update-user.schema";
+import { updateAdmin } from "@/services/data/AdminService";
 
 export default function AdminProfile() {
-  const [admin, setAdmin] = useState<Admin | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { userId } = useAuth();
+  const { user, refreshToken } = useAuth();
 
-  useEffect(() => {
-    async function fetchAdminDetails() {
-      try {
-        const adminData = await getAdminDetails(userId!);
-        setAdmin(adminData);
-      } catch {
-        setError("Failed to load admin details.");
-      }
+  const handleFormSubmit = async (data: UpdateUserSchema) => {
+    try {
+      const requestData = data.password ? data : { ...data, password: undefined };
+      await updateAdmin(user!.id, {
+        ...requestData,
+      });
+      
+      await refreshToken();
+    } catch {
+      setError("Failed to update musician.");
     }
-    fetchAdminDetails();
-  }, [userId]);
+  };
 
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Admin Profile</h2>
       {error && <p className="text-red-500">{error}</p>}
-      {admin && <UpdateAdminForm admin={admin} onAdminUpdated={setAdmin} />}
+      {user && <UpdateAdminForm admin={user as Admin} onSubmit={handleFormSubmit} />}
     </div>
   );
 }

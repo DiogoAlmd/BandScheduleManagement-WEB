@@ -1,41 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Musician } from "@/types/musician";
+import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import UpdateMusicianForm from "@/components/Forms/UpdateMusicianForm";
-import { getMusicianDetails, updateMusician } from "@/services/data/MusiciansService";
+import { updateMusician } from "@/services/data/MusiciansService";
 import { UpdateMusicianSchema } from "@/schemas/Musician/update-musician.schema";
+import { Musician } from "@/types/musician";
 
 export default function MusicianProfile() {
-  const [musician, setMusician] = useState<Musician | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const { userId } = useAuth();
-
-  useEffect(() => {
-    async function fetchMusicianDetails() {
-      try {
-        setLoading(true);
-        const musicianData = await getMusicianDetails(userId!);
-        setMusician(musicianData);
-      } catch {
-        setError("Failed to load musician details.");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchMusicianDetails();
-  }, [userId]);
+  const { user, refreshToken } = useAuth();
 
   const handleFormSubmit = async (data: UpdateMusicianSchema) => {
     try {
       const requestData = data.password ? data : { ...data, password: undefined };
-      const updatedMusician = await updateMusician(userId!, {
+      await updateMusician(user!.id, {
         ...requestData,
         instrumentIds: data.instrumentIds,
       });
-      setMusician(updatedMusician);
+      
+      await refreshToken();
     } catch {
       setError("Failed to update musician.");
     }
@@ -44,10 +28,9 @@ export default function MusicianProfile() {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Musician Profile</h2>
-      {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}
-      {musician && (
-        <UpdateMusicianForm musician={musician} onSubmit={handleFormSubmit} />
+      {user && (
+        <UpdateMusicianForm musician={user as Musician} onSubmit={handleFormSubmit} />
       )}
     </div>
   );

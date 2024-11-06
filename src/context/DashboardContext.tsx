@@ -10,10 +10,10 @@ interface DashboardContextData {
 const DashboardContext = createContext<DashboardContextData>({} as DashboardContextData);
 
 export function DashboardProvider({ children }: { children: ReactNode }) {
-  const { userRole } = useAuth();
+  const { user } = useAuth();
 
-  const isAdmin = userRole === "admin";
-  const isMusician = userRole === "musician";
+  const isAdmin = user?.role === "admin";
+  const isMusician = user?.role === "musician";
 
   return (
     <DashboardContext.Provider value={{ isAdmin, isMusician }}>

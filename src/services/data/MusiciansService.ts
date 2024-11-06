@@ -12,7 +12,6 @@ export const getMusicians = async (): Promise<Musician[]> => {
 };
 
 export const getMusicianDetails = async (id: number): Promise<Musician> => {
-  console.log(`/musician/${id}`)
   try {
     const response = await api.get(`/musician/${id}`);
     return response.data;

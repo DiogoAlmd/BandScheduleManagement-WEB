@@ -12,7 +12,7 @@ export const getScales = async (): Promise<Scale[]> => {
 };
 
 export const createScale = async (
-  adminId: string,
+  adminId: number,
   scaleData: {
     eventDate: string;
     musicians: { musicianId: number; instrumentIds: number[] }[];

@@ -32,7 +32,7 @@ export default function CreateScaleModal({
     { musicianId: number | null; instrumentIds: number[]; musicianInstruments: { value: number; label: string }[] }[]
   >([{ musicianId: null, instrumentIds: [], musicianInstruments: [] }]);
 
-  const { userId } = useAuth();
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
   async function fetchData() {
@@ -113,7 +113,7 @@ export default function CreateScaleModal({
         return;
       }
 
-      await createScale(userId!, {
+      await createScale(user!.id, {
         eventDate,
         musicians: filteredMusicians,
       });

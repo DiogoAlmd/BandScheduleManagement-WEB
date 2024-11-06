@@ -3,7 +3,5 @@ export interface Admin {
     name: string;
     email: string;
     role: "admin";
-    createdAt: string;
-    updatedAt: string;
   }
   
