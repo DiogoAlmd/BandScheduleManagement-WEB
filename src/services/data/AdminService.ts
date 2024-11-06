@@ -14,7 +14,7 @@ export const createAdmin = async (data: CreateUserSchema): Promise<Admin> => {
   }
 };
 
-export const getAdminDetails = async (adminId: string): Promise<Admin> => {
+export const getAdminDetails = async (adminId: number): Promise<Admin> => {
   try {
     const response = await api.get(`/user/${adminId}`);
     return response.data;

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Musician } from "@/types/musician";
 import { useAuth } from "@/context/AuthContext";
 import UpdateMusicianForm from "@/components/Forms/UpdateMusicianForm";
-import { getMusicianDetails } from "@/services/data/MusiciansService";
+import { getMusicianDetails, updateMusician } from "@/services/data/MusiciansService";
 import { UpdateMusicianSchema } from "@/schemas/Musician/update-musician.schema";
 
 export default function MusicianProfile() {
@@ -28,8 +28,17 @@ export default function MusicianProfile() {
     fetchMusicianDetails();
   }, [userId]);
 
-  const handleMusicianUpdate = (updatedData: UpdateMusicianSchema) => {
-    setMusician((prevMusician) => prevMusician ? { ...prevMusician, ...updatedData } : prevMusician);
+  const handleFormSubmit = async (data: UpdateMusicianSchema) => {
+    try {
+      const requestData = data.password ? data : { ...data, password: undefined };
+      const updatedMusician = await updateMusician(userId!, {
+        ...requestData,
+        instrumentIds: data.instrumentIds,
+      });
+      setMusician(updatedMusician);
+    } catch {
+      setError("Failed to update musician.");
+    }
   };
 
   return (
@@ -38,7 +47,7 @@ export default function MusicianProfile() {
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}
       {musician && (
-        <UpdateMusicianForm musician={musician} onSubmit={handleMusicianUpdate} />
+        <UpdateMusicianForm musician={musician} onSubmit={handleFormSubmit} />
       )}
     </div>
   );

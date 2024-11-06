@@ -8,7 +8,7 @@ import { api } from "@/services/api";
 interface AuthContextData {
   isAuthenticated: boolean;
   userRole: string | null;
-  userId: string | null;
+  userId: number | null;
   email: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -17,7 +17,7 @@ interface AuthContextData {
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 interface JwtPayload {
-  userId: string;
+  userId: number;
   email: string;
   role: string;
 }
@@ -25,7 +25,7 @@ interface JwtPayload {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const router = useRouter();
 
