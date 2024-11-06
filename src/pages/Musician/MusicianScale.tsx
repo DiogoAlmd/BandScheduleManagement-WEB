@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import { deleteScale, getMusicianScales } from "@/services/data/ScaleService";
 import { Scale } from "@/types/scale";
-
-import CreateScaleModal from "@/components/Modals/CreateScaleModal";
 import ScaleList from "@/components/Dashboard/Scales/ScaleList";
 import { useAuth } from "@/context/AuthContext";
 
@@ -45,10 +43,6 @@ export default function MusicianScalePage() {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Scales</h2>
-
-      <div className="flex items-center space-x-4">
-        <CreateScaleModal onScaleCreated={() => {}} />
-      </div>
 
       {error && <p className="text-red-500">{error}</p>}
 
