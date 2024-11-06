@@ -11,6 +11,16 @@ export const getScales = async (): Promise<Scale[]> => {
   }
 };
 
+export const getMusicianScales = async (id: number): Promise<Scale[]> => {
+  try {
+    const response = await api.get(`/scale/musicianScales/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch musician scales:", error);
+    throw error;
+  }
+};
+
 export const createScale = async (
   adminId: number,
   scaleData: {

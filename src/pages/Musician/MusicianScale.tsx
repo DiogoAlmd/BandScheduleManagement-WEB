@@ -1,26 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getScales, deleteScale } from "@/services/data/ScaleService";
+import { deleteScale, getMusicianScales } from "@/services/data/ScaleService";
 import { Scale } from "@/types/scale";
+
 import CreateScaleModal from "@/components/Modals/CreateScaleModal";
 import ScaleList from "@/components/Dashboard/Scales/ScaleList";
+import { useAuth } from "@/context/AuthContext";
 
-export default function ScalePage() {
+export default function MusicianScalePage() {
   const [scales, setScales] = useState<Scale[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await getScales();
+        const data = await getMusicianScales(user!.id);
         setScales(data);
       } catch {
         setError("Failed to load scales.");
       }
     }
     fetchData();
-  }, []);
+  }, [user]);
 
   const handleDeleteScale = async (id: number) => {
     try {
