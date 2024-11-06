@@ -12,7 +12,7 @@ export default function MusicianSidebar() {
         className="font-semibold text-xl mb-4 text-white hover:underline text-left p-0"
         onClick={() => router.push("/dashboard/musician/home")}
       >
-        Admin Dashboard
+        Musician Dashboard
       </Button>
       <nav className="flex flex-col gap-4">
         <Button onClick={() => router.push("/dashboard/musician/scales")}>Scales</Button>
