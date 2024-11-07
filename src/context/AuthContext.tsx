@@ -44,6 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           name: decodedToken.name,
           role: decodedToken.role as "admin" | "musician",
           instruments: decodedToken.instruments || [],
+          password: "",
         });
       }
     }
@@ -59,12 +60,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (decodedToken) {
         setIsAuthenticated(true);
         setUser({
-          id: decodedToken.userId,
-          email: decodedToken.email,
-          name: decodedToken.name,
-          role: decodedToken.role as "admin" | "musician",
-          instruments: decodedToken.instruments || [],
-        });
+                  id: decodedToken.userId,
+                  email: decodedToken.email,
+                  name: decodedToken.name,
+                  role: decodedToken.role as "admin" | "musician",
+                  instruments: decodedToken.instruments || [],
+                  password: "",
+                });
 
         if (decodedToken.role === "admin") router.push("/dashboard/admin/home");
         else if (decodedToken.role === "musician") router.push("/dashboard/musician/home");
@@ -88,6 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           name: decodedToken.name,
           role: decodedToken.role as "admin" | "musician",
           instruments: decodedToken.instruments || [],
+          password: "",
         });
       }
     } catch (error) {

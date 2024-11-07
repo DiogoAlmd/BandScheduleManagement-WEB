@@ -3,10 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useDashboard } from "@/context/DashboardContext";
+import { useAuth } from "@/context/AuthContext";
 
 const DashboardHeader = () => {
   const router = useRouter();
   const { isAdmin, isMusician } = useDashboard();
+  const {logout} = useAuth();
 
   const handleProfileRedirect = () => {
     if (isAdmin) {
@@ -21,7 +23,7 @@ const DashboardHeader = () => {
       <Button variant="outline" onClick={handleProfileRedirect}>
         Profile
       </Button>
-      <Button variant="destructive" onClick={() => router.push("/login/sign-in")}>
+      <Button variant="destructive" onClick={logout}>
         Logout
       </Button>
     </header>
