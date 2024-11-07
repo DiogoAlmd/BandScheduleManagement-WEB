@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { deleteScale, getMusicianScales } from "@/services/data/ScaleService";
+import { getMusicianScales } from "@/services/data/ScaleService";
 import { Scale } from "@/types/scale";
 import ScaleList from "@/components/Dashboard/Scales/ScaleList";
 import { useAuth } from "@/context/AuthContext";
+import { useScales } from "@/providers/ScaleProvider";
 
 export default function MusicianScalePage() {
   const [scales, setScales] = useState<Scale[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const { deleteScale } = useScales();
   const { user } = useAuth();
 
   useEffect(() => {
@@ -23,34 +25,13 @@ export default function MusicianScalePage() {
     fetchData();
   }, [user]);
 
-  const handleDeleteScale = async (id: number) => {
-    try {
-      await deleteScale(id);
-      setScales(scales.filter((scale) => scale.id !== id));
-    } catch {
-      setError("Failed to delete scale.");
-    }
-  };
-
-  const handleUpdateScale = (updatedScale: Scale) => {
-    setScales((prevScales) =>
-      prevScales.map((scale) =>
-        scale.id === updatedScale.id ? updatedScale : scale
-      )
-    );
-  };
-
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Scales</h2>
 
       {error && <p className="text-red-500">{error}</p>}
 
-      <ScaleList 
-        scales={scales} 
-        onDelete={handleDeleteScale} 
-        onUpdate={handleUpdateScale} 
-      />
+      <ScaleList scales={scales} onDelete={deleteScale} />
     </div>
   );
 }
