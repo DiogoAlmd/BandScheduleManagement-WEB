@@ -4,5 +4,6 @@ export interface Musician{
     email: string;
     name: string;
     role: "musician";
+    password: string;
     instruments: Instrument[];
 }

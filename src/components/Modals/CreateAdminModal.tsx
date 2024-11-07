@@ -2,26 +2,18 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Admin } from "@/types/admin";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import CreateAdminForm from "@/components/Forms/CreateAdminForm";
 
 interface CreateAdminModalProps {
-  onAdminCreated: (admin: Admin) => void;
+  createUser: (name: string, email: string, password: string) => Promise<void>;
 }
 
-export default function CreateAdminModal({ onAdminCreated }: CreateAdminModalProps) {
+export default function CreateAdminModal({ createUser }: CreateAdminModalProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleAdminCreated = (newAdmin: Admin) => {
-    onAdminCreated(newAdmin);
+  const handleAdminCreated = async (name: string, email: string, password: string) => {
+    await createUser(name, email, password);
     setIsOpen(false);
   };
 
@@ -34,7 +26,7 @@ export default function CreateAdminModal({ onAdminCreated }: CreateAdminModalPro
         <DialogHeader>
           <DialogTitle>Create Admin</DialogTitle>
         </DialogHeader>
-        <CreateAdminForm onAdminCreated={handleAdminCreated} />
+        <CreateAdminForm onSubmit={handleAdminCreated} />
         <DialogFooter>
           <Button variant="outline" onClick={() => setIsOpen(false)}>
             Cancel

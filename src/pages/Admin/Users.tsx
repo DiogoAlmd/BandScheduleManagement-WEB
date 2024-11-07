@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getAdmins, deleteAdmin } from "@/services/data/AdminService";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,46 +8,15 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-
-import { Admin } from "@/types/admin";
 import CreateAdminModal from "@/components/Modals/CreateAdminModal";
 import UpdateAdminModal from "@/components/Modals/UpdateAdminModal";
+import { useUsers } from "@/providers/UserProvider";
 
 export default function UsersList() {
-  const [users, setUsers] = useState<Admin[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await getAdmins();
-        setUsers(data);
-      } catch {
-        setError("Failed to load users.");
-      }
-    }
-    fetchData();
-  }, []);
-
-  const handleUserCreated = (newUser: Admin) => {
-    setUsers((prevUsers) => [...prevUsers, newUser]);
-  };
-
-  const handleUserUpdated = (updatedUser: Admin) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user.id === updatedUser.id ? updatedUser : user
-      )
-    );
-  };
+  const { data: users, error, createUser, deleteUser } = useUsers();
 
   const handleDeleteUser = async (id: number) => {
-    try {
-      await deleteAdmin(id);
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
-    } catch {
-      setError("Failed to delete user.");
-    }
+    await deleteUser(id);
   };
 
   return (
@@ -57,7 +24,7 @@ export default function UsersList() {
       <h2 className="text-2xl font-bold">Admin Users</h2>
       {error && <p className="text-red-500">{error}</p>}
 
-      <CreateAdminModal onAdminCreated={handleUserCreated} />
+      <CreateAdminModal createUser={createUser} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
         {users.map((user) => (
@@ -72,10 +39,7 @@ export default function UsersList() {
               </p>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <UpdateAdminModal
-                admin={user}
-                onAdminUpdated={handleUserUpdated}
-              />
+              <UpdateAdminModal admin={user} />
               <Button
                 variant="destructive"
                 onClick={() => handleDeleteUser(user.id)}

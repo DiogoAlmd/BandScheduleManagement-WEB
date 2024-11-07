@@ -10,23 +10,20 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Admin } from "@/types/admin";
 import UpdateAdminForm from "@/components/Forms/UpdateAdminForm";
-
+import { Admin } from "@/types/admin";
+import { useUsers } from "@/providers/UserProvider";
 
 interface UpdateAdminModalProps {
   admin: Admin;
-  onAdminUpdated: (updatedAdmin: Admin) => void;
 }
 
-export default function UpdateAdminModal({
-  admin,
-  onAdminUpdated,
-}: UpdateAdminModalProps) {
+export default function UpdateAdminModal({ admin }: UpdateAdminModalProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { updateUser } = useUsers();
 
-  const handleAdminUpdate = (updatedAdmin: Admin) => {
-    onAdminUpdated(updatedAdmin);
+  const handleAdminUpdate = async (name?: string, email?: string, password?: string) => {
+    await updateUser(admin.id, name, email, password);
     setIsOpen(false);
   };
 
@@ -39,10 +36,7 @@ export default function UpdateAdminModal({
         <DialogHeader>
           <DialogTitle>Edit Admin Profile</DialogTitle>
         </DialogHeader>
-        <UpdateAdminForm
-          admin={admin}
-          onAdminUpdated={handleAdminUpdate}
-        />
+        <UpdateAdminForm admin={admin} onSubmit={handleAdminUpdate} />
         <DialogFooter>
           <Button variant="outline" onClick={() => setIsOpen(false)}>
             Cancel

@@ -1,55 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getMusicians, deleteMusician } from "@/services/data/MusiciansService";
-import { Musician } from "@/types/musician";
+
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import CreateMusicianModal from "@/components/Modals/CreateMusicianModal";
 import UpdateMusicianModal from "@/components/Modals/UpdateMusicianModal";
-
+import { useMusicians } from "@/providers/MusicianProvider";
 
 export default function MusicianList() {
-  const [musicians, setMusicians] = useState<Musician[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await getMusicians();
-        setMusicians(data);
-      } catch {
-        setError("Failed to load musicians.");
-      }
-    }
-    fetchData();
-  }, []);
-
-  const handleMusicianCreated = (newMusician: Musician) => {
-    setMusicians([...musicians, newMusician]);
-  };
-
-  const handleMusicianUpdated = (updatedMusician: Musician) => {
-    setMusicians((prevMusicians) =>
-      prevMusicians.map((musician) =>
-        musician.id === updatedMusician.id ? updatedMusician : musician
-      )
-    );
-  };
+  const {
+    data: musicians,
+    error,
+    deleteMusician,
+  } = useMusicians();
 
   const handleDeleteMusician = async (id: number) => {
-    try {
-      await deleteMusician(id);
-      setMusicians(musicians.filter((musician) => musician.id !== id));
-    } catch {
-      setError("Failed to delete musician.");
-    }
+    await deleteMusician(id);
   };
 
   return (
@@ -57,7 +23,7 @@ export default function MusicianList() {
       <h2 className="text-2xl font-bold">Musicians</h2>
       {error && <p className="text-red-500">{error}</p>}
 
-      <CreateMusicianModal onMusicianCreated={handleMusicianCreated} />
+      <CreateMusicianModal />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
         {musicians.map((musician) => (
@@ -75,7 +41,6 @@ export default function MusicianList() {
             <CardFooter className="flex justify-between">
               <UpdateMusicianModal
                 musician={musician}
-                onMusicianUpdated={handleMusicianUpdated}
               />
               <Button
                 variant="destructive"

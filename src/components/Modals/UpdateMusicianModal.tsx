@@ -10,32 +10,33 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { updateMusician } from "@/services/data/MusiciansService";
 import { Musician } from "@/types/musician";
-
 import { UpdateMusicianSchema } from "@/schemas/Musician/update-musician.schema";
 import UpdateMusicianForm from "../Forms/UpdateMusicianForm";
+import { useMusicians } from "@/providers/MusicianProvider";
+import { useGetAllInstruments } from "@/providers/InstrumentProviders";
 
 interface UpdateMusicianModalProps {
   musician: Musician;
-  onMusicianUpdated: (updatedMusician: Musician) => void;
 }
 
 export default function UpdateMusicianModal({
   musician,
-  onMusicianUpdated,
 }: UpdateMusicianModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { updateMusician } = useMusicians();
+  const { data: instruments, } = useGetAllInstruments();
 
   const handleFormSubmit = async (data: UpdateMusicianSchema) => {
     try {
-      const requestData = data.password ? data : { ...data, password: undefined };
-      const updatedMusician = await updateMusician(musician.id, {
-        ...requestData,
-        instrumentIds: data.instrumentIds,
-      });
-      onMusicianUpdated(updatedMusician);
+      await updateMusician(
+        musician.id,
+        data.name,
+        data.email,
+        data.instrumentIds,
+        data.password
+      );
       setIsOpen(false);
     } catch {
       setError("Failed to update musician.");
@@ -51,7 +52,7 @@ export default function UpdateMusicianModal({
         <DialogHeader>
           <DialogTitle>Edit Musician</DialogTitle>
         </DialogHeader>
-        <UpdateMusicianForm musician={musician} onSubmit={handleFormSubmit} />
+        <UpdateMusicianForm musician={musician} onSubmit={handleFormSubmit} instruments={instruments}/>
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         <DialogFooter>
           <Button variant="outline" onClick={() => setIsOpen(false)}>

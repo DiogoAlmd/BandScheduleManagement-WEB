@@ -9,6 +9,7 @@ export const createAdmin = async (data: CreateUserSchema): Promise<Admin> => {
     const response = await api.post("/auth", data);
     return response.data;
   } catch (error) {
+    console.log("caiu aqui", error);
     console.error("Failed to create admin:", error);
     throw error;
   }

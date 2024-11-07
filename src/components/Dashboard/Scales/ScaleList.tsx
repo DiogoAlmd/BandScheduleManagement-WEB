@@ -1,5 +1,3 @@
-"use client";
-
 import { Scale } from "@/types/scale";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,21 +12,15 @@ import UpdateScaleModal from "@/components/Modals/UpdateScaleModal";
 interface ScaleListProps {
   scales: Scale[];
   onDelete: (id: number) => void;
-  onUpdate: (updatedScale: Scale) => void;
 }
 
-export default function ScaleList({ scales, onDelete, onUpdate }: ScaleListProps) {
+export default function ScaleList({ scales, onDelete }: ScaleListProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
       {scales.map((scale) => (
-        <Card
-          key={scale.id}
-          className="border shadow-md flex flex-col h-full"
-        >
+        <Card key={scale.id} className="border shadow-md flex flex-col h-full">
           <CardHeader>
-            <CardTitle>
-              {new Date(scale.eventDate).toLocaleString()}
-            </CardTitle>
+            <CardTitle>{new Date(scale.eventDate).toLocaleString()}</CardTitle>
           </CardHeader>
           <CardContent className="flex-grow">
             <p className="text-gray-700 text-sm">
@@ -49,14 +41,8 @@ export default function ScaleList({ scales, onDelete, onUpdate }: ScaleListProps
             </ul>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <UpdateScaleModal
-              scale={scale}
-              onScaleUpdated={onUpdate}
-            />
-            <Button
-              variant="destructive"
-              onClick={() => onDelete(scale.id)}
-            >
+            <UpdateScaleModal scale={scale} />
+            <Button variant="destructive" onClick={() => onDelete(scale.id)}>
               Delete
             </Button>
           </CardFooter>

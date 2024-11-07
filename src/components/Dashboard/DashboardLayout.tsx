@@ -1,10 +1,11 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DashboardProvider } from "@/context/DashboardContext";
 import Sidebar from "./Sidebar";
 import DashboardHeader from "./Header";
-
+import { Toaster } from "react-hot-toast";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -23,9 +24,16 @@ function DashboardLayoutContent({ children }: DashboardLayoutProps) {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  const [queryClient] = useState(() => new QueryClient());
+
   return (
-    <DashboardProvider>
-      <DashboardLayoutContent>{children}</DashboardLayoutContent>
-    </DashboardProvider>
+    <>
+      <Toaster position="top-right" reverseOrder={false} />
+      <QueryClientProvider client={queryClient}>
+        <DashboardProvider>
+          <DashboardLayoutContent>{children}</DashboardLayoutContent>
+        </DashboardProvider>
+      </QueryClientProvider>
+    </>
   );
 }

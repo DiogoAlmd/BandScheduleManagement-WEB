@@ -11,29 +11,27 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { updateScale } from "@/services/data/ScaleService";
-import { getMusicians } from "@/services/data/MusiciansService";
-import { Musician } from "@/types/musician";
 import Select, { MultiValue } from "react-select";
 import { Plus, Trash2 } from "lucide-react";
 import { Scale } from "@/types/scale";
+import { useMusicians } from "@/providers/MusicianProvider";
+import { useScales } from "@/providers/ScaleProvider";
 
 interface UpdateScaleModalProps {
   scale: Scale;
-  onScaleUpdated: (updatedScale: Scale) => void;
 }
 
-export default function UpdateScaleModal({
-  scale,
-  onScaleUpdated,
-}: UpdateScaleModalProps) {
+export default function UpdateScaleModal({ scale }: UpdateScaleModalProps) {
   const [error, setError] = useState<string | null>(null);
-  const [musicians, setMusicians] = useState<Musician[]>([]);
   const [eventDate, setEventDate] = useState<string>(
     new Date(scale.eventDate).toISOString().slice(0, 16)
   );
   const [musicianSelections, setMusicianSelections] = useState<
-    { musicianId: number | null; instrumentIds: number[]; musicianInstruments: { value: number; label: string }[] }[]
+    {
+      musicianId: number | null;
+      instrumentIds: number[];
+      musicianInstruments: { value: number; label: string }[];
+    }[]
   >(
     scale.scaleMusician.map((sm) => ({
       musicianId: sm.musician.id,
@@ -44,15 +42,10 @@ export default function UpdateScaleModal({
       })),
     }))
   );
-  const [isOpen, setIsOpen] = useState(false);
 
-  async function fetchData() {
-    try {
-      setMusicians(await getMusicians());
-    } catch {
-      setError("Failed to load musicians.");
-    }
-  }
+  const [isOpen, setIsOpen] = useState(false);
+  const { data: musicians } = useMusicians();
+  const { updateScale } = useScales();
 
   const musicianOptions = musicians.map((musician) => ({
     value: musician.id,
@@ -70,10 +63,11 @@ export default function UpdateScaleModal({
       );
       if (selectedMusicianData) {
         newSelections[index].musicianId = selectedMusician.value;
-        newSelections[index].musicianInstruments = selectedMusicianData.instruments.map((inst) => ({
-          value: inst.id,
-          label: inst.name,
-        }));
+        newSelections[index].musicianInstruments =
+          selectedMusicianData.instruments.map((inst) => ({
+            value: inst.id,
+            label: inst.name,
+          }));
       }
     } else {
       newSelections[index].musicianId = null;
@@ -119,11 +113,11 @@ export default function UpdateScaleModal({
           instrumentIds: selection.instrumentIds,
         }));
 
-      const updatedScale = await updateScale(scale.id, {
+      await updateScale(scale.id, {
         eventDate,
         musicians: filteredMusicians,
       });
-      onScaleUpdated(updatedScale);
+
       setIsOpen(false);
     } catch {
       setError("Failed to update scale.");
@@ -133,7 +127,7 @@ export default function UpdateScaleModal({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button onClick={() => {setIsOpen(true); fetchData();}}>Edit Scale</Button>
+        <Button onClick={() => setIsOpen(true)}>Edit Scale</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

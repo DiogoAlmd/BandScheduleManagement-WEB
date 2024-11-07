@@ -11,9 +11,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { createMusician } from "@/services/data/MusiciansService";
-import { getInstruments } from "@/services/data/InstrumentService";
-import { Musician } from "@/types/musician";
+import { useMusicians } from "@/providers/MusicianProvider";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -22,25 +20,16 @@ import {
 } from "@/schemas/Musician/create-musician.schema";
 import { Instrument } from "@/types/instrument";
 import Select from "react-select";
+import { getInstruments } from "@/services/data/InstrumentService";
 
-interface CreateMusicianModalProps {
-  onMusicianCreated: (musician: Musician) => void;
-}
-
-export default function CreateMusicianModal({
-  onMusicianCreated,
-}: CreateMusicianModalProps) {
-  const [error, setError] = useState<string | null>(null);
+export default function CreateMusicianModal() {
+  const { createMusician } = useMusicians();
   const [instruments, setInstruments] = useState<Instrument[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
   async function fetchInstruments() {
-    try {
-      const data = await getInstruments();
+    const data = await getInstruments();
       setInstruments(data);
-    } catch {
-      setError("Failed to load instruments.");
-    }
   }
 
   const {
@@ -54,16 +43,11 @@ export default function CreateMusicianModal({
   });
 
   const onSubmit = async (data: CreateMusicianSchema) => {
-    try {
-      const instrumentIds = selectedInstruments.map((inst) => inst.value);
-      const newMusician = await createMusician({ ...data, instrumentIds });
-      onMusicianCreated(newMusician);
+    const instrumentIds = selectedInstruments.map((inst) => inst.value);
+      await createMusician(data.name, data.email, instrumentIds, data.password);
       reset();
       setSelectedInstruments([]);
       setIsOpen(false);
-    } catch {
-      setError("Failed to add musician.");
-    }
   };
 
   const instrumentOptions = instruments.map((instrument) => ({
@@ -78,7 +62,7 @@ export default function CreateMusicianModal({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button onClick={() => fetchInstruments()}>Add New Musician</Button>
+        <Button onClick={() => {setIsOpen(true); fetchInstruments()}}>Add New Musician</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -134,7 +118,6 @@ export default function CreateMusicianModal({
               </p>
             )}
           </div>
-          {error && <p className="text-red-500">{error}</p>}
           <DialogFooter>
             <Button type="submit">Confirm</Button>
           </DialogFooter>

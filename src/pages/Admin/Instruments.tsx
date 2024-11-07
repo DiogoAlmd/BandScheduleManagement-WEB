@@ -1,51 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Instrument } from "@/types/instrument";
-import { createInstrument, deleteInstrument, getInstruments } from "@/services/data/InstrumentService";
+import { useGetAllInstruments } from "@/providers/InstrumentProviders";
+import { useState } from "react";
+
 
 export default function InstrumentsList() {
-  const [instruments, setInstruments] = useState<Instrument[]>([]);
+  const {
+    data: instruments,
+    status,
+    error,
+    createInstrument,
+    deleteInstrument,
+  } = useGetAllInstruments();
   const [newInstrument, setNewInstrument] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchInstruments = async () => {
-      try {
-        const initialInstruments = await getInstruments();
-        setInstruments(initialInstruments);
-        setError(null);
-      } catch {
-        setError("Failed to load instruments.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchInstruments();
-  }, []);
 
   const handleAddInstrument = async () => {
     if (!newInstrument) return;
-    try {
-      const newInstrumentData = await createInstrument(newInstrument);
-      setInstruments([...instruments, newInstrumentData]);
-      setNewInstrument("");
-    } catch {
-      setError("Failed to add instrument.");
-    }
+    await createInstrument(newInstrument);
+    setNewInstrument("");
   };
 
   const handleDeleteInstrument = async (id: number) => {
-    try {
-      await deleteInstrument(id);
-      setInstruments(instruments.filter((instrument) => instrument.id !== id));
-    } catch {
-      setError("Failed to delete instrument.");
-    }
+    await deleteInstrument(id);
   };
 
   return (
@@ -60,15 +38,22 @@ export default function InstrumentsList() {
         />
         <Button onClick={handleAddInstrument}>Add Instrument</Button>
       </div>
-      {error && <p className="text-red-500">{error}</p>}
-      {loading ? (
+      {status === "pending" ? (
         <p>Loading instruments...</p>
+      ) : status === "error" ? (
+        <p className="text-red-500">{error}</p>
       ) : (
         <ul className="space-y-2">
           {instruments.map((instrument) => (
-            <li key={instrument.id} className="flex items-center justify-between p-2 border rounded">
+            <li
+              key={instrument.id}
+              className="flex items-center justify-between p-2 border rounded"
+            >
               <span>{instrument.name}</span>
-              <Button variant="destructive" onClick={() => handleDeleteInstrument(instrument.id)}>
+              <Button
+                variant="destructive"
+                onClick={() => handleDeleteInstrument(instrument.id)}
+              >
                 Delete
               </Button>
             </li>

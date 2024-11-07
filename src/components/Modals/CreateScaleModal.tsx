@@ -11,37 +11,28 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { createScale } from "@/services/data/ScaleService";
-import { getMusicians } from "@/services/data/MusiciansService";
-import { Musician } from "@/types/musician";
 import Select, { MultiValue } from "react-select";
 import { Plus, Trash2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useScales } from "@/providers/ScaleProvider";
+import { useMusicians } from "@/providers/MusicianProvider";
 
-interface CreateScaleModalProps {
-  onScaleCreated: () => void;
-}
-
-export default function CreateScaleModal({
-  onScaleCreated,
-}: CreateScaleModalProps) {
+export default function CreateScaleModal() {
   const [error, setError] = useState<string | null>(null);
-  const [musicians, setMusicians] = useState<Musician[]>([]);
   const [eventDate, setEventDate] = useState<string>("");
   const [musicianSelections, setMusicianSelections] = useState<
-    { musicianId: number | null; instrumentIds: number[]; musicianInstruments: { value: number; label: string }[] }[]
+    {
+      musicianId: number | null;
+      instrumentIds: number[];
+      musicianInstruments: { value: number; label: string }[];
+    }[]
   >([{ musicianId: null, instrumentIds: [], musicianInstruments: [] }]);
 
   const { user } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
+  const { createScale } = useScales();
+  const { data: musicians } = useMusicians();
 
-  async function fetchData() {
-    try {
-      setMusicians(await getMusicians());
-    } catch {
-      setError("Failed to load musicians or instruments.");
-    }
-  }
+  const [isOpen, setIsOpen] = useState(false);
 
   const musicianOptions = musicians.map((musician) => ({
     value: musician.id,
@@ -66,10 +57,11 @@ export default function CreateScaleModal({
       );
       if (selectedMusicianData) {
         newSelections[index].musicianId = selectedMusician.value;
-        newSelections[index].musicianInstruments = selectedMusicianData.instruments.map((inst) => ({
-          value: inst.id,
-          label: inst.name,
-        }));
+        newSelections[index].musicianInstruments =
+          selectedMusicianData.instruments.map((inst) => ({
+            value: inst.id,
+            label: inst.name,
+          }));
       }
     } else {
       newSelections[index].musicianId = null;
@@ -117,8 +109,10 @@ export default function CreateScaleModal({
         eventDate,
         musicians: filteredMusicians,
       });
-      onScaleCreated();
-      setMusicianSelections([{ musicianId: null, instrumentIds: [], musicianInstruments: [] }]);
+
+      setMusicianSelections([
+        { musicianId: null, instrumentIds: [], musicianInstruments: [] },
+      ]);
       setEventDate("");
       setIsOpen(false);
     } catch {
@@ -129,7 +123,7 @@ export default function CreateScaleModal({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button onClick={() => {setIsOpen(true); fetchData()}}>Add New Scale</Button>
+        <Button onClick={() => setIsOpen(true)}>Add New Scale</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
