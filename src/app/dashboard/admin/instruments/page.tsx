@@ -1,5 +1,3 @@
-"use client";
-
 import { InstrumentsProviders } from "@/providers/InstrumentProviders";
 import InstrumentsList from "@/pages/Admin/Instruments";
 

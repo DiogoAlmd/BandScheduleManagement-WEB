@@ -1,5 +1,3 @@
-"use client";
-
 import { UsersProvider } from "@/providers/UserProvider";
 import UsersList from "@/pages/Admin/Users";
 

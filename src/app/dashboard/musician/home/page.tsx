@@ -1,5 +1,3 @@
-"use client";
-
 import MusicianHome from "@/pages/Musician/MusicianHome";
 
 export default function MusicianHomePage() {

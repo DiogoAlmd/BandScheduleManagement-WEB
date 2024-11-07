@@ -1,7 +1,4 @@
-"use client";
-
 import AdminHome from "@/pages/Admin/AdminHome";
-
 
 export default function AdminHomePage() {
   return (
